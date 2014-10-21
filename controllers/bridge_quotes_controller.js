@@ -7,7 +7,7 @@ function BridgeQuotesController(options) {
 
 BridgeQuotesController.prototype.getQuotes = function getQuotes(request, response) {
   var _this = this;
-  _this.bridgeQuotesService.process(request.params)
+  _this.bridgeQuotesService.generateQuotes(request.params)
     .then(function(quote) {
       response
         .status(200)
