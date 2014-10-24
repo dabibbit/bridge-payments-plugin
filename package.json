@@ -1,6 +1,6 @@
 {
   "name": "bridge-payments-plugin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/gatewayd/bridge-payments-plugin"
@@ -8,6 +8,7 @@
   "homepage": "https://github.com/gatewayd/bridge-payments-plugin",
   "dependencies": {
     "bluebird": "^2.3.6",
+    "crypto-js": "^3.1.2-5",
     "express": "^4.9.8",
     "ripple-name": "^0.1.3",
     "superagent": "^0.20.0",
