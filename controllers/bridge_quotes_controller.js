@@ -7,13 +7,13 @@ function BridgeQuotesController(options) {
 
 BridgeQuotesController.prototype.getQuotes = function getQuotes(request, response) {
   var _this = this;
-  _this.bridgeQuotesService.generateQuotes(request.params)
-    .then(function(quote) {
+  _this.bridgeQuotesService.buildBridgeQuotes(request.params)
+    .then(function(quotes) {
       response
         .status(200)
         .send({
           success: true,
-          bridge_payments: [quote]
+          bridge_payments: quotes
         });
     })
     .error(function (error) {
