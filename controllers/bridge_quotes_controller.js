@@ -1,4 +1,4 @@
-const BridgeQuotesService = require(__dirname + '/../lib/services/bridge_quotes_service.js');
+const BridgeQuotesService = require(__dirname + '/../lib/services/bridge_quote_service.js');
 
 function BridgeQuotesController(options) {
   this.gatewayd = options.gatewayd;
