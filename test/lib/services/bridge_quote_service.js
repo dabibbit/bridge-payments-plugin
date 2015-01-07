@@ -3,7 +3,11 @@ var chai               = require('chai');
 var chaiAsPromised     = require('chai-as-promised');
 var sinon              = require('sinon');
 var sinonAsPromised    = require('sinon-as-promised');
+var http               = require('superagent');
+var Promise            = require('bluebird');
+var winston            = require('winston');
 var BridgeQuoteService = require(__dirname + '/../../../lib/services/bridge_quote_service.js');
+var fixture            = require(__dirname + '/../../fixtures/bridge_quote_requests.js');
 
 describe('bridge_quote_service', function() {
 
@@ -12,9 +16,14 @@ describe('bridge_quote_service', function() {
   var bridgeQuoteService;
 
   before(function() {
-    var get = sinon.stub();
-    get.withArgs('RIPPLE_REST_API').returns('http://test.com');
-    bridgeQuoteService = new BridgeQuoteService({gatewayd: {config: {get: get}}});
+    bridgeQuoteService = new BridgeQuoteService({
+      gatewayd: {
+        config: {
+          get: sinon.stub().withArgs('RIPPLE_REST_API').returns('http://test.com')
+        },
+        logger: winston
+      }
+    });
   });
 
   describe('_parseAmount()', function() {
@@ -104,14 +113,6 @@ describe('bridge_quote_service', function() {
 
   describe('getAddressDetails()', function() {
 
-    var bridgeQuoteService;
-
-    before(function() {
-      var get = sinon.stub();
-      get.withArgs('RIPPLE_REST_API').returns('http://test.com');
-      bridgeQuoteService = new BridgeQuoteService({gatewayd: {config: {get: get}}});
-    });
-
     it('should parse the sender and receiver accounts and return an object representation', function(done) {
       bridgeQuoteService.getAddressDetails({
         sender: 'acct:conner@ripple.com',
@@ -152,5 +153,56 @@ describe('bridge_quote_service', function() {
 
   describe('fetchExternalQuote()', function() {
 
+    it('should make a request to fetch an external bridgeQuote and return that quote', function(done) {
+      var httpGetStub = sinon.stub(http, 'get').returns({
+        endAsync: function() {
+          return Promise.resolve({
+            body: {
+              bridge_payments: [fixture.function_responses.fetchExternalQuote.valid]
+            }
+          });
+        }
+      });
+      try {
+        bridgeQuoteService.fetchExternalQuote(fixture.function_requests.fetchExternalQuote.valid)
+          .then(function(bridgeQuote) {
+            chai.assert(httpGetStub.calledWith('https://ripple.com/v1/bridge_payments/quotes/acct:conner@ripple.com/acct:norm@ripple.com/5+USD'));
+            chai.assert.deepEqual(bridgeQuote, fixture.function_responses.fetchExternalQuote.valid);
+            done();
+          }).error(done);
+      } finally {
+        httpGetStub.restore();
+      }
+    });
+
+    it('should fail because the external request does not return a bridge_quote', function() {
+      var httpGetStub = sinon.stub(http, 'get').returns({
+        endAsync: function() {
+          return Promise.resolve({
+            body: {
+              bridge_payments: []
+            }
+          });
+        }
+      });
+      try {
+        return chai.assert.isRejected(bridgeQuoteService.fetchExternalQuote(fixture.function_requests.fetchExternalQuote.valid), /Receiver gateway did not return a quote/);
+      } finally {
+        httpGetStub.restore();
+      }
+    });
+
+    it('should fail because the external request fails', function() {
+      var httpGetStub = sinon.stub(http, 'get').returns({
+        endAsync: function() {
+          return Promise.reject(new Error('fooblah'));
+        }
+      });
+      try {
+        return chai.assert.isRejected(bridgeQuoteService.fetchExternalQuote(fixture.function_requests.fetchExternalQuote.valid), /Unable to fetch quote from receiver gateway/);
+      } finally {
+        httpGetStub.restore();
+      }
+    });
   });
 });
