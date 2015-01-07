@@ -149,4 +149,8 @@ describe('bridge_quote_service', function() {
       }), /Invalid receiver address/);
     });
   });
+
+  describe('fetchExternalQuote()', function() {
+
+  });
 });
