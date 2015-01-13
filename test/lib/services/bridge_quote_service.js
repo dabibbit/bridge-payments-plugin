@@ -29,9 +29,9 @@ describe('bridge_quote_service', function() {
   describe('_parseAmount()', function() {
 
     it('should validate and and return an object representation of a value+currency string', function(done) {
-      bridgeQuoteService._parseAmount('5+USD')
+      bridgeQuoteService._parseAmount('5.30+USD')
         .then(function(amount) {
-          chai.assert.strictEqual(amount.value, '5');
+          chai.assert.strictEqual(amount.value, '5.30');
           chai.assert.strictEqual(amount.currency, 'USD');
           done();
         }).error(done);
@@ -122,13 +122,13 @@ describe('bridge_quote_service', function() {
           source: {
             federated: 'acct:conner@ripple.com',
             prefix: 'acct',
-            address: 'conner@ripple.com',
+            address: 'conner',
             domain: 'ripple.com'
           },
           destination: {
             federated: 'acct:norm@ripple.com',
             prefix: 'acct',
-            address: 'norm@ripple.com',
+            address: 'norm',
             domain: 'ripple.com'
           }
         });
