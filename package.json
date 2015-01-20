@@ -1,6 +1,6 @@
 {
   "name": "bridge-payments-plugin",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/gatewayd/bridge-payments-plugin"
