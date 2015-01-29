@@ -5,7 +5,7 @@ function BridgePaymentController(options) {
   this.bridgePaymentService = new BridgePaymentService(options);
 }
 
-BridgePaymentController.prototype.post = function (request, response) {
+BridgePaymentController.prototype.payment = function (request, response) {
   var _this = this;
   _this.bridgePaymentService.acceptQuote(request.body)
     .then(function(payment) {
@@ -14,6 +14,27 @@ BridgePaymentController.prototype.post = function (request, response) {
         .send({
           success: true,
           bridge_payments: [payment]
+        });
+    })
+    .error(function (error) {
+      response
+        .status(400)
+        .send({
+          success: false,
+          errors: [error.message]
+        });
+    });
+};
+
+BridgePaymentController.prototype.paymentStatus = function (request, response) {
+  var _this = this;
+  _this.bridgePaymentService.paymentStatus(request.params.id)
+    .then(function(gatewayTransaction) {
+      response
+        .status(200)
+        .send({
+          success: true,
+          gateway_transaction: gatewayTransaction
         });
     })
     .error(function (error) {

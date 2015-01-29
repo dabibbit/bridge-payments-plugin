@@ -10,7 +10,9 @@ function BridgePaymentPlugin(options) {
   var bridgePaymentController = new BridgePaymentController(options);
 
   router.get('/v1/bridge_payments/quotes/:sender/:receiver/:amount', bridgeQuotesController.getQuotes.bind(bridgeQuotesController));
-  router.post('/v1/bridge_payments/', bridgePaymentController.post.bind(bridgePaymentController));
+
+  router.post('/v1/bridge_payments/', bridgePaymentController.payment.bind(bridgePaymentController));
+  router.get('/v1/bridge_payments/:id', bridgePaymentController.paymentStatus.bind(bridgePaymentController));
 
   this.router = router;
 }
