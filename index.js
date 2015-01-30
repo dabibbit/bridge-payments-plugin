@@ -12,7 +12,7 @@ function BridgePaymentPlugin(options) {
   router.get('/v1/bridge_payments/quotes/:sender/:receiver/:amount', bridgeQuotesController.getQuotes.bind(bridgeQuotesController));
 
   router.post('/v1/bridge_payments/', bridgePaymentController.payment.bind(bridgePaymentController));
-  router.get('/v1/bridge_payments/:id', bridgePaymentController.paymentStatus.bind(bridgePaymentController));
+  router.get('/v1/bridge_payments/status/:id', bridgePaymentController.paymentStatus.bind(bridgePaymentController));
 
   this.router = router;
 }
